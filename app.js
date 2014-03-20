@@ -50,11 +50,31 @@ Ext.application({
     },
 
      launch: function() {
+	 
+		var geo = Ext.create('Ext.util.Geolocation', {
+			autoUpdate: false,
+			listeners: {
+				locationupdate: function(geo) {
+					//alert('New latitude: ' + geo.getLatitude());
+				},
+				locationerror: function(geo, bTimeout, bPermissionDenied, bLocationUnavailable, message) {
+					if(bTimeout){
+						alert('Timeout occurred.');
+					} else {
+						alert('Error occurred.');
+					}
+				}
+			}
+		});
+		geo.updateLocation();
+	 
+	 
+	 
         // The following is accomplished with the Google Map API
-        var position = new google.maps.LatLng(37.44885, -122.158592),  //Sencha HQ
+        var position = new google.maps.LatLng(geo.getLatitude(), geo.getLongitude()),  //Sencha HQ
 
             infowindow = new google.maps.InfoWindow({
-                content: 'Sencha HQ'
+                content: 'Yaniar Here' 
             }),
 
             //Tracking Marker Image
@@ -85,18 +105,7 @@ Ext.application({
                 docked: 'top',
                 ui: 'light',
                 items: [
-                    {
-                        iconCls: 'home',
-                        handler: function() {
-                            //disable tracking
-                            var segmented = Ext.getCmp('segmented'),
-                                pressedButtons = segmented.getPressedButtons(),
-                                trafficIndex = pressedButtons.indexOf(trafficButton),
-                                newPressed = (trafficIndex != -1) ? [trafficButton] : [];
-                            segmented.setPressedButtons(newPressed);
-                            mapdemo.getMap().panTo(position);
-                        }
-                    },
+                    
                     {
                         id: 'segmented',
                         xtype: 'segmentedbutton',
@@ -123,7 +132,7 @@ Ext.application({
 
         var mapdemo = Ext.create('Ext.Map', {
             mapOptions : {
-                center : new google.maps.LatLng(37.381592, -122.135672),  //nearby San Fran
+                center : new google.maps.LatLng(geo.getLatitude(), geo.getLongitude()),  
                 zoom : 12,
                 mapTypeId : google.maps.MapTypeId.ROADMAP,
                 navigationControl: true,
